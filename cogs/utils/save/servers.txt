@@ -1,0 +1,4 @@
+servers = []
+for s in bot.servers:
+    servers.append(s.name)
+print(servers)

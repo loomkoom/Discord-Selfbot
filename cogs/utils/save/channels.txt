@@ -1,0 +1,2 @@
+for channel in server.channels:
+    print(channel.name)

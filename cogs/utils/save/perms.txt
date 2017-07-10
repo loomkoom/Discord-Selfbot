@@ -1,0 +1,2 @@
+for perm in server.get_member('ID').server_permissions:
+    print(perm)

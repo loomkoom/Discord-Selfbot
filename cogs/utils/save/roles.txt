@@ -1,0 +1,2 @@
+for role in server.roles:
+    print(role.name)

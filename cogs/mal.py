@@ -31,7 +31,7 @@ class Mal:
         except RuntimeError:
             try:
                 search_url = "https://www.googleapis.com/customsearch/v1?q=site:myanimelist.net {} {} ".format(type, query) + "&start=" + '1' + "&key=" + \
-                            config['google_api_key'] + "&cx=" + config[
+                            os.environ['google_api_key'] + "&cx=" + os.environ[
                                 'custom_search_engine']
                 r = await loop.run_in_executor(None, requests.get, search_url)
                 response = r.content.decode('utf-8')
@@ -71,12 +71,12 @@ class Mal:
             if found:
                 anime_id = re.findall('/anime/(.*)/', result)
                 results = await loop.run_in_executor(None, spice.search_id, int(anime_id[0]), spice.get_medium('anime'),
-                                                     spice.init_auth(config['mal_username'], config['mal_password']))
+                                                     spice.init_auth(os.environ['mal_username'], os.environ['mal_password']))
                 gc.collect()
 
             else:
                 allresults = await loop.run_in_executor(None, spice.search, msg.strip(), spice.get_medium('anime'),
-                                                        spice.init_auth(config['mal_username'], config['mal_password']))
+                                                        spice.init_auth(os.environ['mal_username'], os.environ['mal_password']))
                 gc.collect()
                 results = allresults[0]
 
@@ -158,12 +158,12 @@ class Mal:
             if found:
                 manga_id = re.findall('/manga/(.*)/', result)
                 results = await loop.run_in_executor(None, spice.search_id, int(manga_id[0]), spice.get_medium('manga'),
-                                                     spice.init_auth(config['mal_username'], config['mal_password']))
+                                                     spice.init_auth(os.environ['mal_username'], os.environ['mal_password']))
                 gc.collect()
 
             else:
                 allresults = await loop.run_in_executor(None, spice.search, msg.strip(), spice.get_medium('manga'),
-                                                        spice.init_auth(config['mal_username'], config['mal_password']))
+                                                        spice.init_auth(os.environ['mal_username'], os.environ['mal_password']))
                 gc.collect()
                 results = allresults[0]
 

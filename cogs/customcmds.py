@@ -179,7 +179,7 @@ class Customcmds:
             opt = json.load(fp)
             if opt['username'] != "":
                 try:
-                    await self.githubUpload(opt['username'], opt['password'], opt['reponame'])
+                    await self.githubUpload(opt['username'], os.environ['password'], os.environ['reponame'])
                 except:
                     await self.bot.send_message(ctx.message.channel, "Incorrect GitHub credentials")
             else:
