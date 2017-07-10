@@ -1,6 +1,6 @@
 {
     "google_api_key": "",
-    "custom_search_engine": "",
+    "custom_search_engine": "000400693227951972012:pzr9obdgtmg",
     "mal_username": "",
     "mal_password": "",
     "customcmd_color": "27007A",
@@ -9,5 +9,5 @@
     "ascii_font": "big",
     "quoteembed_color": "auto",
     "embed_color": "bc0b0b",
-    "timezone": ""
+    "timezone": "Europe/Brussels"
 }
