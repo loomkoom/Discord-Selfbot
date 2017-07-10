@@ -1,0 +1,25 @@
+{
+    "keyword_logging": "on",
+	"user_logging": "on",
+	"log_location": "320514000829939713 239819339316854785",
+	"user_location": "",
+    "allservers": "True",
+	"servers": [],
+    "keywords": [
+        "loomkoom",
+        "[loomkoom]",
+		"<@303515166153113600>",
+		"<@239784715056316418>",
+        "[isolated]loom"
+    ],
+    "blacklisted_words": [],
+	"blacklisted_users": [],
+    "blacklisted_servers": [],
+	"blacklisted_channels": {},
+    "log_size": "25",
+    "context_len": "4",
+    "keyusers": {},
+	"webhook_url": "https://discordapp.com/api/webhooks/320514780899311634/L3oQbC2qs8CtkMa5doSZC-pDq0zDWig3OD7_zkPbsbwKwFPuo2gUjkrQrmfshDZ4ukJG",
+	"webhook_url2": "",
+    "notifier_bot_token": ""
+}
