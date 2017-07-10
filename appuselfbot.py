@@ -170,9 +170,9 @@ async def on_ready():
         if 'username' not in opt:
             opt['username'] = ''
         if 'password' not in opt:
-            opt['password'] = ''
+            os.environ['password'] = ''
         if 'reponame' not in opt:
-            opt['reponame'] = ''
+            os.environ['reponame'] = ''
         fp.seek(0)
         fp.truncate()
         json.dump(opt, fp, indent=4)

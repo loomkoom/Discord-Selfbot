@@ -4,15 +4,15 @@ CD /D %root%
 SETLOCAL EnableDelayedExpansion
 python -V >nul 2>&1 || goto :python
 git init . >nul || goto :git
-git remote add origin https://github.com/appu1232/Discord-Selfbot.git >nul 2>&1
-get fetch origin master >nul 2>&1
+git remote add upstream https://github.com/appu1232/Discord-Selfbot.git >nul 2>&1
+get fetch upstream master >nul 2>&1
 if not exist appuselfbot.py (
     echo This seems to be your first run. The setup will now proceed to download all required files. They will be downloaded to the same location as where this run.bat file is.
     pause
     git fetch --all
 	git reset --hard origin/master
 )
-git remote show origin > tmp.txt
+git remote show upstream > tmp.txt
 set findfile="tmp.txt"
 set findtext="up"
 findstr %findtext% %findfile% >nul 2>&1		
@@ -37,7 +37,7 @@ goto run
 	ren settings settings2
 	echo Latest update:
 	git --no-pager log --pretty=oneline -n1 origin/master ^master
-	git pull origin master
+	git pull upstream master
 	if errorlevel 1 goto force
 	echo Finished updating
 	rmdir /s /q settings >nul 2>&1

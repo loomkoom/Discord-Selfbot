@@ -68,7 +68,7 @@ class Misc:
             try:
                 g = git.cmd.Git(working_dir=os.getcwd())
                 branch = g.execute(["git", "rev-parse", "--abbrev-ref", "HEAD"])
-                g.execute(["git", "fetch", "origin", branch])
+                g.execute(["git", "fetch", "upstream", branch])
                 version = g.execute(["git", "rev-list", "--right-only", "--count", "{}...origin/{}".format(branch, branch)])
                 if branch == "master":
                     branch_note = "."
@@ -583,15 +583,15 @@ class Misc:
                 e = fp.read()
                 with open('settings/avatars.json', 'r+') as fp:
                         opt = json.load(fp)
-                        if opt['password']:
-                            if opt['password'] == "":
+                        if os.environ['password']:
+                            if os.environ['password'] == "":
                                 await self.bot.send_message(ctx.message.channel,"You have not set your password yet in `settings/avatars.json` Please do so and try again")
                             else:
-                                pw = opt['password']
+                                pw = os.environ['password']
                                 await self.bot.edit_profile(password=pw, avatar=e)
                                 await self.bot.send_message(ctx.message.channel, "Your avatar has been set to the specified image")
                         else:
-                            opt['password'] = ""
+                            os.environ['password'] = ""
                             await self.bot.send_message(ctx.message.channel,"You have not set your password yet in `settings/avatars.json` Please do so and try again")
             os.remove(name)
         elif not embed_perms(ctx.message) and url:
