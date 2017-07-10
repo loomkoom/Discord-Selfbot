@@ -111,25 +111,40 @@ class Debugger:
                 else:
                     system = sys.platform
                 em.add_field(name='Operating System', value='%s' % system)
-                # em.add_field(name='Discord.py Version', value='%s'%discord.__version__)
-                em.add_field(name='Python Version', value='%s (%s)'%(sys.version,sys.api_version))
-                em.add_field(name='PIP Version', value='%s'%pkg_resources.get_distribution('pip').version)
-                dependencies = ''
-                dep_file = open('%s/requirements.txt' % os.getcwd()).read().split("\n")
-                # [] + dep_file
-                for dep in dep_file:
-                    dep = dep.split('==')
-                    cur = pkg_resources.get_distribution(dep[0]).version
-                    if cur == dep[1]: dependencies += '\✅ %s: %s / %s\n'%(dep[0], cur, dep[1])
-                    else: dependencies += '\❌ %s: %s / %s\n'%(dep[0], cur, dep[1])
-                em.add_field(name='Dependencies', value='%s' % dependencies)
-                if option and 'path' in option.lower():
-                    paths = "\n".join(sys.path).strip()
-                    if len(paths) > 500:
-                        url = PythonGists.Gist(description='sys.path', content=str(paths), name='syspath.txt')
-                        em.add_field(name='Import Paths', value=paths[:500]+' [(Show more)](%s)'%url)
+                em.add_field(name='Discord.py Version', value='%s'%discord.__version__)
+                em.add_field(name='Python Version', value='%s (%s)'%(sys.version,sys.api_version), inline=False)
+                em.add_field(name='PIP Version', value='%s'%pkg_resources.get_distribution('pip').version, inline=False)
+                dependencys = ['discord','prettytable','requests','spice_api','bs4','strawpy','lxml','discord_webhooks','psutil','PythonGists','PIL','pyfiglet','tokage','pytz','github']
+                loaded_modules = 0
+                unloaded_modules = 0
+                for x in dependencys:
+                    try:
+                        __import__(x.strip())
+                        loaded_modules += 1
+                    except:
+                        unloaded_modules += 1
+                
+                em.add_field(name='Dependencies', value='{0} modules imported successfully\n {1} modules imported unsuccessfully'.format(loaded_modules, unloaded_modules), inline=False)
+                
+                cogs = self.bot.cogs
+                cogs_folder = os.listdir('cogs')
+                cog_folder = []
+                for x in cogs_folder:
+                    if x.endswith('.py'):
+                        cog_folder.append(x)
+                    
+                
+                loaded_cogs = 0
+                unloaded_cogs = 0
+                for x in cogs:
+                    x = self.bot.cogs[x].__module__[5:] + '.py'
+                    if x in cog_folder:
+                        loaded_cogs += 1
                     else:
-                        em.add_field(name='Import Paths', value=paths)
+                        unloaded_cogs += 1
+                        
+                em.add_field(name='Cogs', value='{0} cogs loaded\n {1} cogs unloaded'.format(loaded_cogs, len(cog_folder)-loaded_cogs), inline=False)
+
                 user = subprocess.run(['whoami'], stdout=subprocess.PIPE).stdout.decode('utf-8').strip()
                 if sys.platform == 'linux':
                     user += user+'@'+subprocess.run(['hostname'], stdout=subprocess.PIPE).stdout.decode('utf-8').strip()
@@ -139,18 +154,15 @@ class Debugger:
                     await self.bot.send_message(ctx.message.channel, content=None, embed=em)
             else:
                 await self.bot.send_message(ctx.message.channel, 'No permissions to embed debug info.')
-            await self.bot.delete_message(ctx.message)
         except:
-            await error(self.bot, ctx.message)
             await self.bot.send_message(ctx.message.channel, '``` %s ```'%format_exc())
 
-    @commands.group(pass_context=True)
-    async def py(self, ctx):
+    @commands.group(pass_context=True, invoke_without_command=True)
+    async def py(self, ctx, *, msg):
         """Python interpreter. See the wiki for more info."""
 
         if ctx.invoked_subcommand is None:
-            pre = cmd_prefix_len()
-            code = ctx.message.content[2 + pre:].strip().strip('` ')
+            code = msg.strip().strip('` ')
 
             env = {
                 'bot': self.bot,
@@ -166,7 +178,7 @@ class Debugger:
 
             os.chdir(os.getcwd())
             with open('%s/cogs/utils/temp.txt' % os.getcwd(), 'w') as temp:
-                temp.write(ctx.message.content[2 + pre:].strip())
+                temp.write(msg.strip())
 
             await self.bot.send_message(ctx.message.channel, result)
 
@@ -332,6 +344,7 @@ class Debugger:
     @commands.command(pass_context=True, aliases=['cc', 'clear', 'cleartrace'])
     async def clearconsole(self, ctx):
         """Clear the console of any errors or other messages."""
+        await self.bot.delete_message(ctx.message)
         for _ in range(100):
             print("")
         print('Logged in as')
@@ -341,6 +354,7 @@ class Debugger:
             pass
         print('User id:' + str(self.bot.user.id))
         print('------')
+        await self.bot.send_message(ctx.message.channel, self.bot.bot_prefix + 'Console Cleared')
 
 
 def setup(bot):
