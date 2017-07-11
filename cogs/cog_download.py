@@ -98,14 +98,15 @@ class CogDownloading:
             await self.bot.send_message(ctx.message.channel, self.bot.bot_prefix + "That's not a real cog!")
         else:
             found_cog = response.json()
-            if os.path.isfile("cogs/" + cog + ".py"):
+            filename = found_cog["link"].rsplit("/",1)[1].rsplit(".",1)[0]
+            if os.path.isfile("cogs/" + filename + ".py"):
                 embed = discord.Embed(title=found_cog["title"], description=found_cog["description"])
                 embed.set_author(name=found_cog["author"])
                 await self.bot.send_message(ctx.message.channel, self.bot.bot_prefix + "Are you sure you want to delete this cog? (y/n)", embed=embed)
                 reply = await self.bot.wait_for_message(author=ctx.message.author, check=check)
                 if reply.content.lower() == "y":
-                    os.remove("cogs/" + cog + ".py")
-                    self.bot.unload_extension("cogs." + cog)
+                    os.remove("cogs/" + filename + ".py")
+                    self.bot.unload_extension("cogs." + filename)
                     await self.bot.send_message(ctx.message.channel, self.bot.bot_prefix + "Successfully deleted the `{}` cog.".format(found_cog["title"]))
                 else:
                     await self.bot.send_message(ctx.message.channel, self.bot.bot_prefix + "Didn't delete `{}`: user cancelled.".format(found_cog["title"]))
@@ -122,15 +123,27 @@ class CogDownloading:
         list = []
         for a in data:
             list.append(a.get("title"))
-        embed = discord.Embed(title="Available Cogs", description="")
+        installed = []
+        uninstalled = []
         for entry in list[2:]:
-            entry = entry.rsplit(".")[0]
-            if os.path.isfile("cogs/" + entry + ".py"):
-                embed.description += "\✅ `{}`\n".format(entry)
+            response = requests.get("http://appucogs.tk/cogs/{}".format(entry))
+            found_cog = response.json()
+            filename = found_cog["link"].rsplit("/",1)[1].rsplit(".",1)[0]
+            if os.path.isfile("cogs/" + filename + ".py"):
+                installed.append(entry.rsplit(".",1)[0])
             else:
-                embed.description += "\🆕 `{}`\n".format(entry)
-        embed.set_footer(text="To view information about a specific cog, do >cog view <cog>")
-        await self.bot.send_message(ctx.message.channel, content=parse_prefix(self.bot, "[b]Use `[c]install/uninstall <cog_name>` to manage your cogs."), embed=embed)
+                uninstalled.append(entry.rsplit(".",1)[0])
+        embed = discord.Embed(title="List of ASCII cogs")
+        if installed:
+            embed.add_field(name="Installed", value="\n".join(installed), inline=True)
+        else:
+            embed.add_field(name="Installed", value="None!", inline=True)
+        if uninstalled:
+            embed.add_field(name="Not installed", value="\n".join(uninstalled), inline=True)
+        else:
+            embed.add_field(name="Not installed", value="None!", inline=True)
+        embed.set_footer(text=">help cog for more information.")
+        await self.bot.send_message(ctx.message.channel, "", embed=embed)
         
     @cog.command(pass_context=True)
     async def view(self, ctx, cog):
