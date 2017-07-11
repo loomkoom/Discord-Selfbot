@@ -68,7 +68,7 @@ class Misc:
             try:
                 g = git.cmd.Git(working_dir=os.getcwd())
                 branch = g.execute(["git", "rev-parse", "--abbrev-ref", "HEAD"])
-                g.execute(["git", "fetch", "upstream", branch])
+                g.execute(["git", "fetch", "origin", branch])
                 version = g.execute(["git", "rev-list", "--right-only", "--count", "{}...origin/{}".format(branch, branch)])
                 if branch == "master":
                     branch_note = "."
