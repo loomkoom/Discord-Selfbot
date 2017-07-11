@@ -1,23 +1,5 @@
 {
-    "kaguya": [
-        [
-            "smile",
-            "https://i.imgur.com/FdRNcrf.png"
-        ],
-        [
-            "no",
-            "http://i.imgur.com/h8Rg4QH.png"
-        ],
-        [
-            "take advantage",
-            "http://i.imgur.com/vWys2t5.png"
-        ],
-        [
-            "how lewd",
-            "http://i.imgur.com/oQXUC9B.png"
-        ]
-    ],
-	"emotes furioustyping": [
+    "emotes furioustyping": [
         [
             "jim carey",
             "https://media.giphy.com/media/fQZX2aoRC1Tqw/giphy.gif"
@@ -133,7 +115,6 @@
 		    "https://cdn.discordapp.com/attachments/297053830787629056/320706877409198080/Thenkung.gif"
 		]
     ],
-	"hakomari": "https://myanimelist.net/manga/55215/Utsuro_no_Hako_to_Zero_no_Maria",
     "git": "https://github.com/appu1232",
     "get good": "https://cdn.discordapp.com/attachments/240823952459431936/266807454506024961/lpLiH3n.png",
 	"appu" : "https://images-ext-1.discordapp.net/external/96OrkgYugFbEnCdu0rvqgbGp4--9FiPc-He4-DLlfvA/https/images.discordapp.net/avatars/124910128582361092/a_ceaca3cc66ad10e0eaa794e299cad136.gif",
