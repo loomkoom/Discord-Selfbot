@@ -138,7 +138,7 @@ async def on_ready():
         bot.avatar = avi
     if not os.path.isfile('settings/optional_config.json'):
         conf = load_config()
-        o_conf = {'google_api_key': os.environ['google_api_key'], 'custom_search_engine': conf['custom_search_engine'], 'mal_username': os.environ['mal_username'], 'mal_password': os.environ['mal_password']}
+        o_conf = {'google_api_key': os.environ['google_api_key'], 'custom_search_engine': os.environ['custom_search_engine'], 'mal_username': os.environ['mal_username'], 'mal_password': os.environ['mal_password']}
         with open('settings/optional_config.json', 'w') as oc:
             json.dump(o_conf, oc, indent=4)
     with open('settings/optional_config.json', 'r+') as fp:
