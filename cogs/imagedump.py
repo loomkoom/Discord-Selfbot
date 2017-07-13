@@ -20,38 +20,36 @@ class Imagedump:
 
     def check_images(self, message, images, type_of_items):
         if message.attachments:
-            for item in message.attachments:
-                if item['url'] != '' and item['url'] not in images:
-                    for i in type_of_items:
-                        if item['url'].endswith(i.strip()):
-                            return item['url']
+            yield from (item['url'] for item in message.attachments if item['url'] != '' and item['url'] not in images
+                        for i in type_of_items if item['url'].endswith(i.strip()))
 
-        elif message.embeds:
+        if message.embeds:
             for data in message.embeds:
                 try:
-                    url = data['thumbnail']['url']
-                    if (url.endswith(('.jpg', '.jpeg', '.png', '.gif', '.gifv', '.webm')) or data['type'] in {'jpg', 'jpeg', 'png', 'gif', 'gifv', 'webm', 'image'}) and url not in images:
-                        for i in type_of_items:
-                            if url.endswith(i.strip()):
-                                return url
-                except:
-                    pass
+                    url = data['image']['url']
+                except KeyError:
+                    try:
+                        url = data['thumbnail']['url']
+                    except KeyError:
+                        continue
 
-        else:
-            urls = []
-            try:
-                urls = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', message.content)
-            except:
-                pass
+                if (url.endswith(('.jpg', '.jpeg', '.png', '.gif', '.gifv', '.webm'))
+                        or data['type'] in {'jpg', 'jpeg', 'png', 'gif', 'gifv', 'webm', 'image'}) and url not in images:
+                    for i in type_of_items:
+                        if url.endswith(i.strip()):
+                            yield url
 
-            if urls is not []:
-                for url in urls:
-                    if url.endswith(('.jpg', '.jpeg', '.png', '.gif', '.gifv', '.webm')) and url not in images:
-                        for i in type_of_items:
-                            if url.endswith(i.strip()):
-                                return url
 
-        return None
+        urls = []
+        try:
+            urls = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', message.content)
+        except:
+            pass
+
+        if urls is not []:
+            yield from (url for url in urls
+                        if url.endswith(('.jpg', '.jpeg', '.png', '.gif', '.gifv', '.webm')) and url not in images
+                        for i in type_of_items if url.endswith(i.strip()))
 
     @commands.group(pass_context=True)
     async def imagedump(self, ctx):
@@ -267,13 +265,12 @@ class Imagedump:
                     print('Fetching last %s messages...' % str(limit-1))
                 async for message in self.bot.logs_from(channel, limit=limit, before=before, after=after):
                     if message.author == user or not user:
-                        url = self.check_images(message, images, type_of_items)
+                        for url in self.check_images(message, images, type_of_items):
+                            if url:
+                                images.append(url)
 
-                        if url:
-                            images.append(url)
-
-                        if len(images) == limit_images:
-                            break
+                            if len(images) == limit_images:
+                                break
 
                 with open('cogs/utils/urls{}.txt'.format(new_dump), 'w') as fp:
                     for url in images:
