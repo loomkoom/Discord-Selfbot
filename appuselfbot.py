@@ -636,7 +636,7 @@ if __name__ == '__main__':
         try:
             try:
                 bot.run(os.environ['TOKEN'], bot=False)
- -          except KeyError:
+            except KeyError:
                 bot.run(get_config_value('config', 'token'), bot=False)
         except discord.errors.LoginFailure:
             print("It seems the token you entered is incorrect or has changed. If you changed your password or enabled/disabled 2fa, your token will change. Grab your new token. Here's how you do it:\n")
