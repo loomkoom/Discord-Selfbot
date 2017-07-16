@@ -4,8 +4,11 @@ import git
 import discord
 import os
 import aiohttp
+try:
+    from lxml import etree
+except ImportError:
+    from bs4 import BeautifulSoup
 from urllib.parse import parse_qs, quote_plus
-from lxml import etree
 #from cogs.utils import common
 
 
@@ -92,7 +95,6 @@ def avatar_time_check(bot, oldtime, interval):
 
 def update_bot(message):
     g = git.cmd.Git(working_dir=os.getcwd())
-    branch = g.execute(["git", "rev-parse", "--abbrev-ref", "HEAD"])
     g.execute(["git", "fetch", "origin", "master"])
     update = g.execute(["git", "remote", "show", "origin"])
     if ('up to date' in update or 'fast-forward' in update) and message:
@@ -179,23 +181,34 @@ async def get_google_entries(query):
                     result = json.loads(await resp.text())
                 return None, result['items'][0]['link']
 
-            root = etree.fromstring(await resp.text(), etree.HTMLParser())
-            search_nodes = root.findall(".//div[@class='g']")
-            for node in search_nodes:
-                url_node = node.find('.//h3/a')
-                if url_node is None:
-                    continue
-                url = url_node.attrib['href']
-                if not url.startswith('/url?'):
-                    continue
-                url = parse_qs(url[5:])['q'][0]
-                entries.append(url)
+            try:
+                root = etree.fromstring(await resp.text(), etree.HTMLParser())
+                search_nodes = root.findall(".//div[@class='g']")
+                for node in search_nodes:
+                    url_node = node.find('.//h3/a')
+                    if url_node is None:
+                        continue
+                    url = url_node.attrib['href']
+                    if not url.startswith('/url?'):
+                        continue
+                    url = parse_qs(url[5:])['q'][0]
+                    entries.append(url)
+            except NameError:
+                root = BeautifulSoup(await resp.text(), 'html.parser')
+                for result in root.find_all("div", class_='g'):
+                    url_node = result.find('h3')
+                    if url_node:
+                        for link in url_node.find_all('a', href=True):
+                            url = link['href']
+                            if not url.startswith('/url?'):
+                                continue
+                            url = parse_qs(url[5:])['q'][0]
+                            entries.append(url)
     return entries, root
 
 
 def attach_perms(message):
     return message.author.permissions_in(message.channel).attach_files
-
 
 
 def parse_prefix(bot, text):

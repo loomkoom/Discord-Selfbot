@@ -4,7 +4,6 @@ from discord.ext import commands
 from cogs.utils.checks import load_optional_config, embed_perms, get_google_entries
 import aiohttp
 import urllib.parse
-from lxml import etree
 
 '''Module for google web and image search.'''
 
@@ -16,7 +15,7 @@ class Google:
         self.bot = bot
 
     def parse_google_card(self, node):
-        if node is None:
+        if node is None or type(node) is int:
             return None
 
         e = discord.Embed(colour=0x0057e7)
@@ -154,6 +153,7 @@ class Google:
             async with aiohttp.get("https://www.googleapis.com/customsearch/v1?q=" + query.replace(' ', '+') + "&start=" + '1' + "&key=" + os.environ['google_api_key'] + "&cx=" + os.environ['custom_search_engine']) as resp:
                 result = json.loads(await resp.text())
             return await self.bot.send_message(ctx.message.channel, result['items'][0]['link'])
+
         try:
             entries, root = await get_google_entries(query)
             card_node = root.find(".//div[@id='topstuff']")
